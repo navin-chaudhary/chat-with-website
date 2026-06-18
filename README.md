@@ -154,11 +154,19 @@ Temperature is set to `0.1` to reduce creative drift.
 
 ## Index storage
 
-Indexes are persisted to **`.data/indexes/{siteId}.json`** on disk, with an in-process `globalThis` cache for fast reads.
+Indexes are persisted to disk with an in-process `globalThis` cache for fast reads.
+
+| Environment | Storage path |
+|-------------|--------------|
+| Local dev | `.data/indexes/{siteId}.json` |
+| Vercel / Lambda | `/tmp/chat-with-website-indexes/` (auto-detected) |
+| Custom | Set `INDEX_DATA_DIR` env var |
 
 - `siteId` is a base64url encoding of the domain (e.g. `example.com` → `ZXhhbXBsZS5jb20`)
-- Survives Next.js dev hot-reloads (which previously wiped a pure in-memory store)
-- Suitable for a single-user demo; production would use pgvector, Qdrant, or Redis
+- Survives Next.js dev hot-reloads
+- If disk writes fail (read-only filesystem), falls back to in-memory only — no crash
+
+**Serverless note:** On Vercel/Lambda, `/tmp` is writable but ephemeral. Crawl and chat may hit different instances, so chat can still return *"Site not indexed"* after a cold start. For a reliable production deploy, use Redis, Postgres + pgvector, or a vector DB.
 
 ---
 

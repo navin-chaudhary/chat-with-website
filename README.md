@@ -166,7 +166,7 @@ Indexes are persisted to disk with an in-process `globalThis` cache for fast rea
 - Survives Next.js dev hot-reloads
 - If disk writes fail (read-only filesystem), falls back to in-memory only — no crash
 
-**Serverless note:** On Vercel/Lambda, `/tmp` is writable but ephemeral. Crawl and chat may hit different instances, so chat can still return *"Site not indexed"* after a cold start. For a reliable production deploy, use Redis, Postgres + pgvector, or a vector DB.
+**Serverless note:** On Vercel/Lambda, crawl and chat may run on different instances with no shared disk. The crawl response includes the full index (≤ 80 chunks); the client sends it back with each chat request so retrieval works without Redis. For large crawls or multi-user production, use Redis, Postgres + pgvector, or a vector DB.
 
 ---
 

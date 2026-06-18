@@ -5,16 +5,34 @@ import {
   chunksToCitations,
   streamAnswerWithContext,
 } from "@/lib/groq-chat";
-import { getSiteIndex } from "@/lib/index-store";
 import { retrieveChunks } from "@/lib/retrieve";
+import { resolveSiteIndex } from "@/lib/resolve-index";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
+
+const siteIndexSchema = z.object({
+  siteId: z.string(),
+  baseUrl: z.string(),
+  domain: z.string(),
+  crawledAt: z.number(),
+  pageCount: z.number(),
+  chunks: z.array(
+    z.object({
+      id: z.string(),
+      url: z.string(),
+      title: z.string(),
+      text: z.string(),
+      embedding: z.array(z.number()),
+    }),
+  ),
+});
 
 const bodySchema = z.object({
   siteId: z.string().min(1),
   question: z.string().min(1),
   stream: z.boolean().optional(),
+  index: siteIndexSchema.optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -27,8 +45,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { siteId, question, stream } = parsed.data;
-    const index = getSiteIndex(siteId);
+    const { siteId, question, stream, index: clientIndex } = parsed.data;
+    const index = resolveSiteIndex(siteId, clientIndex);
     if (!index) {
       return Response.json(
         { error: "Site not indexed. Crawl a URL first." },

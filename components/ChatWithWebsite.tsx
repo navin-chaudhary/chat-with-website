@@ -3,7 +3,7 @@
 import { FormEvent, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import type { ChatMessage, SourceCitation } from "@/lib/types";
+import type { ChatMessage, SiteIndex, SourceCitation } from "@/lib/types";
 
 type CrawlSummary = {
   siteId: string;
@@ -11,6 +11,7 @@ type CrawlSummary = {
   pageCount: number;
   chunkCount: number;
   pages: { url: string; title: string }[];
+  index?: SiteIndex;
 };
 
 export function ChatWithWebsite() {
@@ -18,6 +19,7 @@ export function ChatWithWebsite() {
   const [crawling, setCrawling] = useState(false);
   const [crawlError, setCrawlError] = useState<string | null>(null);
   const [summary, setSummary] = useState<CrawlSummary | null>(null);
+  const [siteIndex, setSiteIndex] = useState<SiteIndex | null>(null);
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [question, setQuestion] = useState("");
@@ -31,6 +33,7 @@ export function ChatWithWebsite() {
     setCrawling(true);
     setCrawlError(null);
     setSummary(null);
+    setSiteIndex(null);
     setMessages([]);
 
     try {
@@ -42,6 +45,7 @@ export function ChatWithWebsite() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Crawl failed");
       setSummary(data);
+      setSiteIndex(data.index ?? null);
     } catch (err) {
       setCrawlError(err instanceof Error ? err.message : "Crawl failed");
     } finally {
@@ -66,6 +70,7 @@ export function ChatWithWebsite() {
           siteId: summary.siteId,
           question: userQuestion,
           stream: true,
+          ...(siteIndex ? { index: siteIndex } : {}),
         }),
       });
 

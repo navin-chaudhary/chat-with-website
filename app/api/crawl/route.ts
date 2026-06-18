@@ -4,6 +4,7 @@ import { chunkPages } from "@/lib/chunking";
 import { crawlWebsite } from "@/lib/crawler/crawl";
 import { embedMany } from "@/lib/embeddings";
 import { saveSiteIndex } from "@/lib/index-store";
+import { indexForClient } from "@/lib/resolve-index";
 import type { Chunk } from "@/lib/types";
 import { normalizeUrl, siteIdFromUrl } from "@/lib/url-utils";
 
@@ -62,6 +63,8 @@ export async function POST(req: NextRequest) {
 
     saveSiteIndex(index);
 
+    const clientIndex = indexForClient(index);
+
     return NextResponse.json({
       siteId,
       baseUrl,
@@ -70,6 +73,7 @@ export async function POST(req: NextRequest) {
       chunkCount: chunks.length,
       pages: pages.map((p) => ({ url: p.url, title: p.title })),
       skippedCount: skipped.length,
+      ...(clientIndex ? { index: clientIndex } : {}),
     });
   } catch (e) {
     console.error(e);

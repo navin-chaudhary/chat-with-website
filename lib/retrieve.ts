@@ -54,7 +54,7 @@ export async function retrieveChunks(
 
   const maxScore = scored[0]?.score ?? 0;
   const threshold = relevanceThreshold(maxScore);
-  let relevant = scored.filter((s) => s.score >= threshold).map((s) => s.chunk);
+  const relevant = scored.filter((s) => s.score >= threshold).map((s) => s.chunk);
 
   if (chunks.length <= SMALL_INDEX_MAX_CHUNKS) {
     const fallback = scored

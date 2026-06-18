@@ -2,7 +2,7 @@
 
 A take-home assignment app: crawl a single website, index its content, and chat with answers grounded in that site's pages — with source links on every response.
 
-**Stack:** Next.js 15 (App Router) · React 19 · Tailwind CSS · Node.js API routes · Groq (LLM)
+**Stack:** Next.js 15 (App Router)  · Tailwind CSS · Node.js API routes · Groq (LLM)
 
 ---
 

@@ -2,7 +2,7 @@
 
 A take-home assignment app: crawl a single website, index its content, and chat with answers grounded in that site's pages — with source links on every response.
 
-**Stack:** Next.js 15 (App Router) · React 19 · Tailwind CSS · Node.js API routes · Groq (LLM)
+**Stack:** Next.js 15 (App Router)  · Tailwind CSS · Node.js API routes · Groq (LLM)
 
 ---
 
@@ -111,7 +111,7 @@ POST /api/chat ──► Load index ──► Hybrid retrieval (MMR + lexical)
 - Prefers text from `<main>`, then `<article>`, then `<body>`
 - Collects same-domain links for the crawl queue
 
-**Known limitation — SPAs:** Sites that load content via JavaScript (e.g. Next.js client-rendered pages) return mostly empty HTML shells. Only server-rendered text is indexed. For example, crawling `market.way2reach.in` indexes the homepage well but `/products` yields almost no product text.
+**Known limitation — SPAs:** Sites that load content via JavaScript (e.g. Next.js client-rendered pages) return mostly empty HTML shells. Only server-rendered text is indexed. For example, crawling `example.com` indexes the homepage well but `/products` yields almost no product text.
 
 ---
 
@@ -210,7 +210,6 @@ Suggested sites and questions:
 |------|-----|-----------------|
 | `https://example.com` | Simple static HTML | *What is example.com used for?* |
 | `https://books.toscrape.com` | Multi-page, same-domain crawl | *What kinds of books are sold?* |
-| `https://market.way2reach.in` | Real site; demonstrates SPA limits | *What services do they offer?* |
 
 **Grounding test:** ask something not on the site (e.g. *What is the stock price of Apple?*) — expect a refusal, not a fabricated answer.
 
